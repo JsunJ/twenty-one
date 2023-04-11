@@ -1,0 +1,23 @@
+body {
+  background-color: lightgray;
+  color: #3f3f3f;
+  font: normal 20px "Spectral", Helvetica, Arial, sans-serif;
+}
+
+h1 {
+  border: 1px red;
+}
+
+main {
+  margin: 0 auto;
+}
+
+.table {
+  margin: 0 auto;
+  box-sizing: border-box;
+  background-color: darkgreen;
+  height: 600px;
+  width: 1000px;
+  border-radius: 0 0 500px 500px;
+  border: 10px solid #5d2906;
+}

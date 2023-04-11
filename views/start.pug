@@ -1,0 +1,13 @@
+extends layout
+
+block tableContent
+  section.greeting
+    h1 Welcome to
+    h1 TWENTY-ONE!
+
+  section.newgame
+    h2 Start a new game:
+    form(action="/game/new" method="post")
+      button New Game
+
+block footer

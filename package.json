@@ -1,0 +1,25 @@
+{
+  "name": "twenty-one",
+  "version": "1.0.0",
+  "description": "Online 'Twenty One' (Blackjack) Game built in Express.js with Pug and PostgreSQL",
+  "main": "twentyone.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "start": "npx nodemon twentyone.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.12.1",
+    "eslint-cli": "^1.1.1",
+    "nodemon": "^2.0.22"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "morgan": "^1.10.0",
+    "pug": "^3.0.2"
+  }
+}

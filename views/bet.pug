@@ -1,0 +1,19 @@
+extends layout
+
+block tableContent
+  section.bet
+    form(action="/game/bet" method="post")
+      dl
+        dt
+          label(for="betAmount") Place your bet:
+        dd
+          input(type="number"
+                id="betAmount"
+                name="betAmount"
+                value="100")
+      
+      fieldset.actions
+        input(type="submit" value="BET")
+
+block barContent
+  p Your Purse: $1000 #{purse}

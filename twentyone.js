@@ -41,7 +41,6 @@ app.get("/", (req, res) => {
 
 // Render game start page
 app.get("/game/start", (req, res) => {
-  res.locals.store.sessionLog();
   res.render("start");
 });
 
@@ -57,7 +56,6 @@ app.post("/game/new", (req, res, next) => {
 
 // Render the game bet page
 app.get("/game/bet", (req, res) => {
-  res.locals.store.sessionLog();
   res.render("bet", {
     // pass in player's current purse (read from pg store)
   });
@@ -71,19 +69,35 @@ app.post("/game/bet", (req, res, next) => {
     next(new Error("Failed to place bet."));
   }
 
-  res.locals.store.sessionLog();
   res.redirect("/game/player/turn");
 });
 
 // Render the player turn page
 app.get("/game/player/turn", (req, res) => {
-  // check if busted
-  // CONTINUE to game over
-  // or
-  // HIT to /player/post
-  // STAND to /player/stand
+  let gameData = res.locals.store.loadGameData();
 
-  res.render("player-turn");
+  res.render("player-turn", {
+    dealer: gameData.dealer,
+    player: gameData.player,
+    bet: gameData.bet,
+    handsEmpty: res.locals.store.handsEmpty(),
+    cardHidden: res.locals.store.isCardHidden(),
+    handValues: {
+      dealer: res.locals.store.getHandValue(gameData.dealer),
+      player: res.locals.store.getHandValue(gameData.player),
+    }
+  });
+});
+
+// Deal out player and dealer hands
+app.post("/game/deal", (req, res, next) => {
+  res.locals.store.dealHands(); // error?
+  let hidden = res.locals.store.hideCard();
+  if (!hidden) {
+    next(new Error("Failed to hide card."));
+  }
+
+  res.redirect("/game/player/turn");
 });
 
 // Handle player hit

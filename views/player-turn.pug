@@ -1,0 +1,47 @@
+extends layout
+
+block tableContent
+  section.dealer
+    ul
+      if handsEmpty
+        li
+          img.card(src="/images/card_placeholder.png")
+      each card in dealer.hand
+        li
+          img.card(src=`/images/${card.rank}_of_${card.suit}.png`)
+      if cardHidden
+        li
+          img.card(src="/images/card_back.png")
+
+  section.rules
+    p.hand-text Dealer Hand
+    p(class=cardHidden ? "hidden-total" : "dealer-total") #{handValues.dealer}
+    p BLACKJACK PAYS 3 TO 2
+    p Dealer must draw to 16 and stand on 17
+    p.hand-text Your Hand
+    p.player-total #{handValues.player}
+
+  section.actions
+    if handsEmpty
+      form(action="/game/deal" method="post")
+        fieldset#deal-action
+          button DEAL
+    form(action="/game/player/stand" method="post")
+      fieldset.left-actions
+        button STAND
+    form(action="/game/player/hit" method="post")
+      fieldset.right-actions
+        button HIT
+
+  section.player
+    ul
+      if handsEmpty
+        li
+          img.card(src="/images/card_placeholder.png")
+      each card in player.hand
+        li
+          img.card(src=`/images/${card.rank}_of_${card.suit}.png`)
+
+block barContent
+  p Your Purse: $1000 #{purse}
+  p Your Bet: $#{bet}

@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const flash = require("express-flash");
 const session = require("express-session");
 const store = require("connect-loki");
 const SessionPersistence = require("./lib/session-persistence");
@@ -28,10 +29,18 @@ app.use(session({
   secret: "insecure-please-change-me-later",
   store: new LokiStore({}),
 }));
+app.use(flash());
 
 // Create a new session datastore
 app.use((req, res, next) => {
   res.locals.store = new SessionPersistence(req.session);
+  next();
+});
+
+// Extract session info
+app.use((req, res, next) => {
+  res.locals.flash = req.session.flash;
+  delete req.session.flash;
   next();
 });
 
@@ -112,6 +121,8 @@ app.post("/game/player/hit", (req, res, next) => {
     next(new Error("Failed to deal card."));
   }
 
+  req.flash("gameplay", "Hit!");
+
   let player = res.locals.store.loadGameData().player;
   if (res.locals.store.isBusted(player)) {
     res.redirect("/game/over");
@@ -127,6 +138,9 @@ app.post("/game/player/stand", (req, res, next) => {
   if (!revealed) {
     next(new Error("Failed to reveal card."));
   }
+
+  req.flash("gameplay", "Stand!");
+  req.flash("gameplay", "The dealer reveals their facedown card.");
 
   res.redirect("/game/dealer/turn");
 });
@@ -147,7 +161,7 @@ app.get("/game/dealer/turn", (req, res) => {
     handValues: {
       dealer: res.locals.store.getHandValue(gameData.dealer),
       player: res.locals.store.getHandValue(gameData.player),
-    }
+    },
   });
 });
 
@@ -157,6 +171,8 @@ app.post("/game/dealer/hit", (req, res, next) => {
   if (!dealt) {
     next(new Error("Failed to deal card."));
   }
+
+  req.flash("gameplay", "The dealer hits!");
 
   let dealer = res.locals.store.loadGameData().dealer;
   if (res.locals.store.isBusted(dealer)) {
@@ -170,6 +186,13 @@ app.post("/game/dealer/hit", (req, res, next) => {
 app.get("/game/over", (req, res) => {
   let gameData = res.locals.store.loadGameData();
 
+  if (res.locals.store.getHandValue(gameData.dealer) >= 17 &&
+      !gameData.dealer.isBusted) {
+    req.flash("gameplay", "The dealer stands!");
+  }
+
+  if (gameData.player.isBusted) req.flash("gameplay", "Hit!");
+
   res.render("over", {
     dealer: gameData.dealer,
     player: gameData.player,
@@ -179,7 +202,8 @@ app.get("/game/over", (req, res) => {
     handValues: {
       dealer: res.locals.store.getHandValue(gameData.dealer),
       player: res.locals.store.getHandValue(gameData.player),
-    }
+    },
+    flash: req.flash(),
   });
 });
 

@@ -10,11 +10,11 @@ block tableContent
           img.card(src=`/images/${card.rank}_of_${card.suit}.png`)
 
   section.rules
-    p.hand-text Dealer Hand
+    p.hand-text Dealer Hand:
     p(class=cardHidden ? "hidden-total" : "dealer-total") #{handValues.dealer}
-    p BLACKJACK PAYS 3 TO 2
-    p Dealer must draw to 16 and stand on 17
-    p.hand-text Your Hand
+    p.rules-pay BLACKJACK PAYS 3 TO 2
+    p.rules Dealer must draw to 16 and stand on 17
+    p.hand-text Your Hand:
     p.player-total #{handValues.player}
 
   section.actions

@@ -15,6 +15,14 @@ html(lang="en-US")
         div.table
           block tableContent
       
+      section.flash-messages
+        - let kinds = Object.keys(flash || {});
+        if kinds.length > 0
+          ul
+            each kind in kinds
+              each message in flash[kind]
+                li.flash(class=kind)= message
+      
       section.bar
         p Sign In
         p Your Purse: $1000 #{purse}

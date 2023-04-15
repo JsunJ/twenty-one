@@ -4,8 +4,16 @@ body {
   font: normal 20px "Spectral", Helvetica, Arial, sans-serif;
 }
 
-h1 {
-  border: 1px red;
+h1,
+h2 {
+  color: #000000;
+}
+
+h1#twenty-one-text {
+  font-size: 1.5rem;
+  color: #F3C620;
+  text-shadow: 0 0 1px #000000, 0 0 1px #000000, 0 0 1px #000000,
+               0 0 1px #000000, 0 0 1px #000000, 0 0 1px #000000;
 }
 
 main {
@@ -25,8 +33,36 @@ section {
   width: 1000px;
   border-radius: 0 0 500px 500px;
   border: 15px solid #3C1912;
-  outline: 1px solid #000000;
   box-shadow: inset 0 0 10px #000000;
+}
+
+.flash {
+  background-color: #cbe5f2;
+  color: #3399cc;
+  box-sizing: border-box;
+  margin: 20px auto 0 auto;
+  max-width: 500px;
+  padding: 10px 20px;
+}
+
+.flash p {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.flash.error {
+  background-color: #ffcfbf;
+  color: #ff6633;
+}
+
+.flash.success {
+  background-color: #cbf2e5;
+  color: #33cc99;
+}
+
+.flash.gameplay {
+  background-color: #77876982;
+  color: #000000;
 }
 
 .bar {
@@ -35,7 +71,7 @@ section {
   box-shadow: inset 0 0 10px #000000;
   height: 100%;
   width: 100%;
-  margin: 100px 0 0 0;
+  margin-top: 20px;
   border: 1px solid #000000;
 }
 
@@ -61,6 +97,16 @@ dd.side-by-side {
 dd.side-by-side input {
   width: 130px;
   font-size: 1rem;
+}
+
+p.rules-pay {
+  color: #E0080B;
+  font-size: 1.5rem;
+}
+
+p.rules {
+  color: #000000;
+  font-size: 1.25rem;
 }
 
 section.greeting {
@@ -103,6 +149,7 @@ p.hand-text {
   width: 120px;
   margin: 0 auto;
   display: inline-block;
+  color: #000000;
 }
 
 p.hidden-total,
@@ -205,22 +252,22 @@ a.left-actions,
   border: 2px solid #000000;
   font-size: 1.25rem;
   color: #000000;
+  cursor: pointer;
 }
 
 .left-actions button,
 a.left-actions {
   background-color: #E0080B;
+  float: left;
 }
 
-a.left-actions {
+.left-actions button:hover,
+a.left-actions:hover {
+  background-color: #e0080c85;
   float: left;
 }
 
 section.actions > form[action="/game/new"] {
-  float: right;
-}
-
-.right-actions button {
   float: right;
 }
 
@@ -230,6 +277,18 @@ a.center-actions,
   background-color: #778769;
 }
 
+.center-actions button:hover,
+a.center-actions:hover,
+.center-actions:hover input {
+  background-color: #77876985;
+}
+
 .right-actions button {
   background-color: #001EFF;
+  float: right;
+}
+
+.right-actions button:hover {
+  background-color: #001eff85;
+  float: right;
 }

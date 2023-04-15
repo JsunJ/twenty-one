@@ -14,21 +14,13 @@ block tableContent
     p.hand-text(style="visibility: hidden") Your Hand
     p.player-total(style="visibility: hidden") &nbsp
 
-  section.actions(style="margin: 0 25%")
-    form(action="/game/bet" method="post" style="width: 100%")
-      dl
-        dt.side-by-side
-          label(for="betAmount") Place your bet:
-        dd.side-by-side
-          input(type="number"
-                id="betAmount"
-                name="betAmount"
-                value="100")
-      
-      fieldset.center-actions
-        input(type="submit" value="BET")
+  section.actions
+    a.left-actions(href="/game/start") QUIT
+    form(action="/game/new" method="post")
+      fieldset.right-actions
+        button PLAY AGAIN
 
-  section.player(style="margin-top: 5px")
+  section.player
     ul
       li
         img.card(src="/images/card_placeholder.png")

@@ -69,12 +69,17 @@ app.post("/game/bet", (req, res, next) => {
     next(new Error("Failed to place bet."));
   }
 
+  res.locals.store.setPlayerTurn();
   res.redirect("/game/player/turn");
 });
 
 // Render the player turn page
 app.get("/game/player/turn", (req, res) => {
   let gameData = res.locals.store.loadGameData();
+
+  if (res.locals.store.isBusted(gameData.player)) {
+    res.redirect("/game/over");
+  }
 
   res.render("player-turn", {
     dealer: gameData.dealer,
@@ -101,67 +106,95 @@ app.post("/game/deal", (req, res, next) => {
 });
 
 // Handle player hit
-app.post("/game/player/hit", (req, res) => {
-  // deal a card
+app.post("/game/player/hit", (req, res, next) => {
+  let dealt = res.locals.store.dealPlayerCard();
+  if (!dealt) {
+    next(new Error("Failed to deal card."));
+  }
+
+  let player = res.locals.store.loadGameData().player;
+  if (res.locals.store.isBusted(player)) {
+    res.redirect("/game/over");
+  }
 
   res.redirect("/game/player/turn");
 });
 
 // Handle player stand
-app.post("/game/player/stand", (req, res) => {
-  // store player turn = false
-  // store reveal the hidden card
+app.post("/game/player/stand", (req, res, next) => {
+  res.locals.store.setDealerTurn();
+  let revealed = res.locals.store.revealCard();
+  if (!revealed) {
+    next(new Error("Failed to reveal card."));
+  }
 
   res.redirect("/game/dealer/turn");
 });
 
 // Render the dealer turn page
 app.get("/game/dealer/turn", (req, res) => {
-  // check if busted
-  // CONTINUE to game over
-  // or
-  // check if < 17
-  // CONTINUE to /dealer/hit
-  // or
-  // CONTINUE to /game/over
+  let gameData = res.locals.store.loadGameData();
 
-  res.render("dealer-turn");
+  if (res.locals.store.isBusted(gameData.dealer)) {
+    res.redirect("/game/over");
+  }
+
+  res.render("dealer-turn", {
+    dealer: gameData.dealer,
+    player: gameData.player,
+    bet: gameData.bet,
+    cardHidden: res.locals.store.isCardHidden(),
+    handValues: {
+      dealer: res.locals.store.getHandValue(gameData.dealer),
+      player: res.locals.store.getHandValue(gameData.player),
+    }
+  });
 });
 
 // Handle dealer hit
-app.post("/game/dealer/hit", (req, res) => {
-  // deal a card
+app.post("/game/dealer/hit", (req, res, next) => {
+  let dealt = res.locals.store.dealDealerCard();
+  if (!dealt) {
+    next(new Error("Failed to deal card."));
+  }
+
+  let dealer = res.locals.store.loadGameData().dealer;
+  if (res.locals.store.isBusted(dealer)) {
+    res.redirect("/game/over");
+  }
 
   res.redirect("/game/dealer/turn");
 });
 
 // Render the game over page
 app.get("/game/over", (req, res) => {
-  // read results
-  // display result
+  let gameData = res.locals.store.loadGameData();
 
-  // PAY UP to /game/over POST
-  // or
-  // COLLECT to /game/over POST
-
-  res.render("over");
+  res.render("over", {
+    dealer: gameData.dealer,
+    player: gameData.player,
+    bet: gameData.bet,
+    winner: res.locals.store.determineWinner(),
+    cardHidden: res.locals.store.isCardHidden(),
+    handValues: {
+      dealer: res.locals.store.getHandValue(gameData.dealer),
+      player: res.locals.store.getHandValue(gameData.player),
+    }
+  });
 });
 
 // Handle payouts and collections
-app.post("/game/over/post", (req, res) => {
-  // collectOrPayout
-  // updateScores
-  // resetGameSession
-  // game in progress = false
+app.post("/game/over", (req, res) => {
+  // collectOrPayout (pg store)
+  // updatePurse (pg store)
+
+  res.locals.store.destroyGame();
 
   res.redirect("/game/new");
 });
 
 // Render the play again page
 app.get("/game/new", (req, res) => {
-  // PLAY AGAIN to /game/new POST
-  // or
-  // QUIT to /game/start GET
 
   res.render("new");
 });

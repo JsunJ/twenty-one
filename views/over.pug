@@ -1,0 +1,44 @@
+extends layout
+
+block tableContent
+  section.dealer
+    if handValues.dealer > 21
+      p#dealer-busted BUSTED!
+    ul
+      each card in dealer.hand
+        li
+          img.card(src=`/images/${card.rank}_of_${card.suit}.png`)
+
+  section.rules
+    p.hand-text Dealer Hand
+    p(class=cardHidden ? "hidden-total" : "dealer-total") #{handValues.dealer}
+    p BLACKJACK PAYS 3 TO 2
+    p Dealer must draw to 16 and stand on 17
+    p.hand-text Your Hand
+    p.player-total #{handValues.player}
+
+  section.actions
+    if winner === "player" || winner === "push" || handValues.dealer > 21
+      form(action="/game/over" method="post")
+        fieldset.center-actions
+          button COLLECT
+    if winner === "dealer" || handValues.player > 21
+      form(action="/game/over" method="post")
+        fieldset.center-actions
+          button PAY
+
+  section.player
+    if handValues.player > 21
+      p#player-busted BUSTED!
+    if (handValues.player > handValues.dealer || handValues.dealer > 21) && handValues.player <= 21
+      p#player-win YOU WIN!
+    if (handValues.player < handValues.dealer || handValues.player > 21) && handValues.dealer <= 21
+      p#player-lose YOU LOSE!
+    if handValues.player === handValues.dealer
+      p#push PUSH!
+    ul
+      each card in player.hand
+        li
+          img.card(src=`/images/${card.rank}_of_${card.suit}.png`)
+
+block barContent

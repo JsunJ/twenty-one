@@ -22,23 +22,19 @@ block tableContent
     p.player-total #{handValues.player}
 
   section.actions
-    if handsEmpty
-      form(action="/game/deal" method="post")
+    //- if isBusted
+    //-   form(action="/game/over" method="get")
+    //-     fieldset.center-actions
+    //-       button CONTINUE
+    if handValues.dealer >= 17
+      a.center-actions(href="/game/over") CONTINUE
+    if handValues.dealer < 17
+      form(action="/game/dealer/hit" method="post")
         fieldset.center-actions
-          button DEAL
-    if !handsEmpty
-      form(action="/game/player/stand" method="post")
-        fieldset.left-actions
-          button STAND
-      form(action="/game/player/hit" method="post")
-        fieldset.right-actions
-          button HIT
+          button CONTINUE
 
   section.player
     ul
-      if handsEmpty
-        li
-          img.card(src="/images/card_placeholder.png")
       each card in player.hand
         li
           img.card(src=`/images/${card.rank}_of_${card.suit}.png`)

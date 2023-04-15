@@ -14,9 +14,12 @@ html(lang="en-US")
       main
         div.table
           block tableContent
-        
-        section.bar
-          block barContent
+      
+      section.bar
+        p Sign In
+        p Your Purse: $1000 #{purse}
+        p Your Bet: $#{bet || 0}
+        block barContent
 
       footer
         block footer

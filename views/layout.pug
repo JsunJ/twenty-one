@@ -24,10 +24,19 @@ html(lang="en-US")
                 li.flash(class=kind)= message
       
       section.bar
-        p Sign In
-        p Your Purse: $1000 #{purse}
-        p Your Bet: $#{bet || 0}
         block barContent
+          if !signedIn
+            form.sign_in_warning(action="/users/signin" method="get")
+              fieldset
+                p Sign in to track your score.
+                button.bar-sign-in(type="submit") Sign In
+          else
+            form.sign_out_warning(action="/users/signout" method="post")
+              fieldset
+                p Signed in as #{username}.
+                button.bar-sign-in(type="submit") Sign Out
+          p Your Purse: $#{purse || 0}
+          p Current Bet: $#{bet || 0}
 
       footer
         block footer

@@ -6,7 +6,7 @@ const store = require("connect-loki");
 const SessionPersistence = require("./lib/session-persistence");
 
 const app = express();
-const host = "localhost";
+const host = "192.168.86.131";
 const port = 3001;
 const LokiStore = store(session);
 
@@ -39,6 +39,8 @@ app.use((req, res, next) => {
 
 // Extract session info
 app.use((req, res, next) => {
+  res.locals.username = req.session.username;
+  res.locals.signedIn = req.session.signedIn;
   res.locals.flash = req.session.flash;
   delete req.session.flash;
   next();
@@ -65,6 +67,9 @@ app.post("/game/new", (req, res, next) => {
 
 // Render the game bet page
 app.get("/game/bet", (req, res) => {
+  // requiresInProgress
+  // if bet already placed, flash a message and
+  // CONTINUE to the current turn
   res.render("bet", {
     // pass in player's current purse (read from pg store)
   });
@@ -72,18 +77,22 @@ app.get("/game/bet", (req, res) => {
 
 // Handle bet submission
 app.post("/game/bet", (req, res, next) => {
+  // requiresInProgress
+  // if bet already placed, do nothing?
   let betAmount = req.body.betAmount;
   let placed = res.locals.store.placeBet(+betAmount);
   if (!placed) {
     next(new Error("Failed to place bet."));
   }
 
+  req.flash("gameplay", "Bet placed!");
   res.locals.store.setPlayerTurn();
   res.redirect("/game/player/turn");
 });
 
 // Render the player turn page
 app.get("/game/player/turn", (req, res) => {
+  // requiresInProgress
   let gameData = res.locals.store.loadGameData();
 
   if (res.locals.store.isBusted(gameData.player)) {
@@ -105,6 +114,7 @@ app.get("/game/player/turn", (req, res) => {
 
 // Deal out player and dealer hands
 app.post("/game/deal", (req, res, next) => {
+  // requiresInProgress
   res.locals.store.dealHands(); // error?
   let hidden = res.locals.store.hideCard();
   if (!hidden) {
@@ -116,6 +126,7 @@ app.post("/game/deal", (req, res, next) => {
 
 // Handle player hit
 app.post("/game/player/hit", (req, res, next) => {
+  // requiresInProgress
   let dealt = res.locals.store.dealPlayerCard();
   if (!dealt) {
     next(new Error("Failed to deal card."));
@@ -125,14 +136,16 @@ app.post("/game/player/hit", (req, res, next) => {
 
   let player = res.locals.store.loadGameData().player;
   if (res.locals.store.isBusted(player)) {
+    res.locals.store.bustPlayer(player);
     res.redirect("/game/over");
+  } else {
+    res.redirect("/game/player/turn");
   }
-
-  res.redirect("/game/player/turn");
 });
 
 // Handle player stand
 app.post("/game/player/stand", (req, res, next) => {
+  // requiresInProgress
   res.locals.store.setDealerTurn();
   let revealed = res.locals.store.revealCard();
   if (!revealed) {
@@ -147,11 +160,12 @@ app.post("/game/player/stand", (req, res, next) => {
 
 // Render the dealer turn page
 app.get("/game/dealer/turn", (req, res) => {
+  // requiresInProgress
   let gameData = res.locals.store.loadGameData();
 
-  if (res.locals.store.isBusted(gameData.dealer)) {
-    res.redirect("/game/over");
-  }
+  // if (res.locals.store.isBusted(gameData.dealer)) {
+  //   res.redirect("/game/over");
+  // }
 
   res.render("dealer-turn", {
     dealer: gameData.dealer,
@@ -167,6 +181,7 @@ app.get("/game/dealer/turn", (req, res) => {
 
 // Handle dealer hit
 app.post("/game/dealer/hit", (req, res, next) => {
+  // requiresInProgress
   let dealt = res.locals.store.dealDealerCard();
   if (!dealt) {
     next(new Error("Failed to deal card."));
@@ -176,22 +191,22 @@ app.post("/game/dealer/hit", (req, res, next) => {
 
   let dealer = res.locals.store.loadGameData().dealer;
   if (res.locals.store.isBusted(dealer)) {
+    res.locals.store.bustPlayer(dealer);
     res.redirect("/game/over");
+  } else {
+    res.redirect("/game/dealer/turn");
   }
-
-  res.redirect("/game/dealer/turn");
 });
 
 // Render the game over page
 app.get("/game/over", (req, res) => {
+  // requiresInProgress
   let gameData = res.locals.store.loadGameData();
 
   if (res.locals.store.getHandValue(gameData.dealer) >= 17 &&
       !gameData.dealer.isBusted) {
-    req.flash("gameplay", "The dealer stands!");
+    res.locals.flash.gameplay = [ "The dealer stands!" ];
   }
-
-  if (gameData.player.isBusted) req.flash("gameplay", "Hit!");
 
   res.render("over", {
     dealer: gameData.dealer,
@@ -203,14 +218,15 @@ app.get("/game/over", (req, res) => {
       dealer: res.locals.store.getHandValue(gameData.dealer),
       player: res.locals.store.getHandValue(gameData.player),
     },
-    flash: req.flash(),
   });
 });
 
 // Handle payouts and collections
 app.post("/game/over", (req, res) => {
+  // requiresInProgress
   // collectOrPayout (pg store)
   // updatePurse (pg store)
+  // flash messages
 
   res.locals.store.destroyGame();
 
@@ -219,8 +235,44 @@ app.post("/game/over", (req, res) => {
 
 // Render the play again page
 app.get("/game/new", (req, res) => {
+  // requiresInProgress
 
   res.render("new");
+});
+
+// Render the sign in page
+app.get("/users/signin", (req, res) => {
+  req.flash("info", "Please enter your username and password.");
+  res.render("signin", {
+    flash: req.flash(),
+  });
+});
+
+// Handle sign in form submission
+app.post("/users/signin", (req, res) => {
+  let username = req.body.username.trim();
+  let password = req.body.password;
+
+  if (username !== "admin" || password !== "secret") {
+    req.flash("error", "Invalid credentials.");
+    res.render("signin", {
+      flash: req.flash(),
+      username: req.body.username,
+    });
+  } else {
+    req.session.username = username;
+    req.session.signedIn = true;
+    req.flash("info", "Sign in successful!");
+    res.redirect("/game/start");
+  }
+});
+
+// Handle sign out
+app.post("/users/signout", (req, res) => {
+  delete req.session.username;
+  delete req.session.signedIn;
+  req.flash("info", "Sign out successful!");
+  res.redirect("/game/start");
 });
 
 // Error handler

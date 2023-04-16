@@ -1,0 +1,29 @@
+extends layout
+
+block tableContent
+  section.greeting
+    h1 Welcome to
+    h1#twenty-one-text TWENTY-ONE!
+
+  section.actions
+    form(action="/users/signin" method="post")
+      dl
+        dt
+          label(for="username") Username:
+        dd
+          input(type="text" name="username" placeholder="username" value=username
+                id="username")
+
+        dt
+          label(for="password") Password:
+        dd
+          input(type="password" name="password" placeholder="password"
+                id="password")
+
+      fieldset
+        input.left-actions(type="submit" value="Sign In")
+        a.right-actions(href="/game/start") Cancel
+
+block barContent
+  p Your Purse: $#{purse|| 0}
+  p Current Bet: $#{bet || 0}

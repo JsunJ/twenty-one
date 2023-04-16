@@ -16,6 +16,11 @@ h1#twenty-one-text {
                0 0 1px #000000, 0 0 1px #000000, 0 0 1px #000000;
 }
 
+img#cl {
+  width: 20%;
+  height: 20%;
+}
+
 main {
   margin: 0 auto;
 }
@@ -73,6 +78,7 @@ section {
   width: 100%;
   margin-top: 20px;
   border: 1px solid #000000;
+  color: #000000;
 }
 
 .card {
@@ -237,8 +243,10 @@ p#push {
                0 0 1px #000000, 0 0 1px #000000, 0 0 1px #000000;
 }
 
+input.left-actions,
 .left-actions button,
 .center-actions button,
+a.right-actions,
 a.center-actions,
 a.left-actions,
 .center-actions input,
@@ -265,6 +273,7 @@ a.left-actions {
 a.left-actions:hover {
   background-color: #e0080c85;
   float: left;
+  color: #FFFFFF;
 }
 
 section.actions > form[action="/game/new"] {
@@ -281,6 +290,7 @@ a.center-actions,
 a.center-actions:hover,
 .center-actions:hover input {
   background-color: #77876985;
+  color: #FFFFFF;
 }
 
 .right-actions button {
@@ -291,4 +301,63 @@ a.center-actions:hover,
 .right-actions button:hover {
   background-color: #001eff85;
   float: right;
+  color: #FFFFFF;
+}
+
+section.actions > form[action="/users/signin"] {
+  width: 300px;
+  color: #000000;
+}
+
+form input[type="text"],
+form input[type="password"] {
+  border: 1px solid #000000;
+  border-radius: 8px;
+  box-sizing: border-box;
+  height: 30px;
+  padding: 15px 20px;
+  font: normal 20px "Spectral", Helvetica, Arial, sans-serif;
+  width: 100%;
+}
+
+input.left-actions {
+  float: left;
+  background-color: #778769;
+  margin-top: 5px;
+}
+
+input.left-actions:hover {
+  float: left;
+  background-color: #77876985;
+  color: #FFFFFF;
+}
+
+a.right-actions {
+  float: right;
+  background-color: #E0080B;
+  margin-top: 5px;
+}
+
+a.right-actions:hover {
+  float: right;
+  background-color: #e0080c85;
+  color: #FFFFFF;
+}
+
+button.bar-sign-in {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 150px;
+  height: 30px;
+  text-decoration: none;
+  padding: 0;
+  border: 2px solid #000000;
+  font-size: 1.25rem;
+  color: #000000;
+  cursor: default;
+}
+
+button.bar-sign-in:hover {
+  background-color: #3f3f3f;
+  color: #FFFFFF;
 }

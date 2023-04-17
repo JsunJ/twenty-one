@@ -133,10 +133,12 @@ app.post("/game/deal", (req, res, next) => {
   }
 
   if (res.locals.sessionStore.hasBlackJack()) {
+    res.locals.sessionStore.setBlackJack();
     let revealed = res.locals.sessionStore.revealCard();
     if (!revealed) {
       next(new Error("Failed to reveal card."));
     }
+
     res.redirect("/game/over");
   }
 
@@ -250,24 +252,29 @@ app.post("/game/over",
   catchError(async (req, res) => {
     // requiresInProgress
 
-    let winner = res.locals.sessionStore.determineWinner();
-    let bet = res.locals.sessionStore.loadGameData().bet;
+    if (res.locals.signedIn) {
+      let winner = res.locals.sessionStore.determineWinner();
+      let bet = res.locals.sessionStore.loadGameData().bet;
+      let player = res.locals.sessionStore.loadGameData().player;
 
-    if (winner === "blackjack") {
-      bet *= 1.5;
-      await res.locals.pgStore.collect(bet);
-      req.flash("gameplay", `You've won ${bet} dollars!`);
-    } else if (winner === "player") {
-      await res.locals.pgStore.collect(bet);
-      req.flash("gameplay", `You've won ${bet} dollars!`);
-    } else if (winner === "dealer") {
-      await res.locals.pgStore.payout(bet);
-      req.flash("gameplay", `You've lost ${bet} dollars!`);
-    } else {
-      req.flash("gameplay", `Your bet has been returned.`);
+      if (player.hasBlackJack) {
+        bet *= 1.5;
+        await res.locals.pgStore.collect(bet);
+        req.flash("gameplay", `You've won ${bet} dollars!`);
+      } else if (winner === "player") {
+        await res.locals.pgStore.collect(bet);
+        req.flash("gameplay", `You've won ${bet} dollars!`);
+      } else if (winner === "dealer") {
+        await res.locals.pgStore.payout(bet);
+        req.flash("gameplay", `You've lost ${bet} dollars!`);
+      } else {
+        req.flash("gameplay", `Your bet has been returned.`);
+      }
+
+      req.session.purse = await res.locals.pgStore.loadPurse();
     }
 
-    req.session.purse = await res.locals.pgStore.loadPurse();
+    delete req.session.inProgress;
     res.locals.sessionStore.destroyGame();
     res.redirect("/game/new");
   })

@@ -18,7 +18,7 @@ block tableContent
     p.player-total #{handValues.player}
 
   section.actions
-    if winner === "player" || winner === "push" || handValues.dealer > 21
+    if winner === "player" || winner === "push" || winner === "blackjack" || handValues.dealer > 21
       form(action="/game/over" method="post")
         fieldset.center-actions
           button COLLECT
@@ -36,6 +36,8 @@ block tableContent
       p#player-lose YOU LOSE!
     if handValues.player === handValues.dealer
       p#push PUSH!
+    if hasBlackJack && handValues.dealer < 21
+      p#blackjack BLACKJACK!!
     ul
       each card in player.hand
         li

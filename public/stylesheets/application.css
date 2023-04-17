@@ -81,6 +81,10 @@ section {
   color: #000000;
 }
 
+.actions {
+  color: #000000;
+}
+
 .card {
   height: 100%;
   width: 100%;
@@ -100,7 +104,7 @@ dd.side-by-side {
   width: 35%;
 }
 
-dd.side-by-side input {
+dd.side-by-side select {
   width: 130px;
   font-size: 1rem;
 }
@@ -198,6 +202,18 @@ p#player-busted {
                0 0 1px #000000, 0 0 1px #000000, 0 0 1px #000000;
 }
 
+p#blackjack {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3.5rem;
+  color: #778769;
+  rotate: -20deg;
+  text-shadow: 0 0 1px #000000, 0 0 1px #000000, 0 0 1px #000000,
+               0 0 1px #000000, 0 0 1px #000000, 0 0 1px #000000;
+}
+
 p#dealer-busted {
   position: absolute;
   top: 15%;
@@ -261,6 +277,7 @@ a.left-actions,
   font-size: 1.25rem;
   color: #000000;
   cursor: pointer;
+  text-align: center;
 }
 
 .left-actions button,
@@ -360,4 +377,9 @@ button.bar-sign-in {
 button.bar-sign-in:hover {
   background-color: #3f3f3f;
   color: #FFFFFF;
+}
+
+p.signed-in-status {
+  display: inline-block;
+  margin-right: 20px;
 }

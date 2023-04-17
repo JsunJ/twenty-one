@@ -25,5 +25,8 @@ block tableContent
         a.right-actions(href="/game/start") Cancel
 
 block barContent
-  p Your Purse: $#{purse|| 0}
-  p Current Bet: $#{bet || 0}
+  if signedIn
+    p Your Purse: $ #{purse}.00
+  else
+    p Your Purse: $ &infin;
+  p &nbsp

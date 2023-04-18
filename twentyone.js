@@ -252,11 +252,13 @@ app.post("/game/over",
   catchError(async (req, res) => {
     // requiresInProgress
 
+    // make all this better
     if (res.locals.signedIn) {
       let winner = res.locals.sessionStore.determineWinner();
       let bet = res.locals.sessionStore.loadGameData().bet;
       let player = res.locals.sessionStore.loadGameData().player;
 
+      // purse updates
       if (player.hasBlackJack) {
         bet *= 1.5;
         await res.locals.pgStore.collect(bet);
@@ -272,6 +274,9 @@ app.post("/game/over",
       }
 
       req.session.purse = await res.locals.pgStore.loadPurse();
+
+      // win/loss updates
+      await res.locals.pgStore.tallyWinLoss(winner);
     }
 
     delete req.session.inProgress;
@@ -330,6 +335,15 @@ app.post("/users/signout", (req, res) => {
   req.flash("info", "Sign out successful!");
   res.redirect("/game/start");
 });
+
+// Render the leaderboard page
+app.get("/game/leaderboard",
+  catchError(async (req, res) => {
+    let stats = await res.locals.pgStore.leaderboard();
+
+    res.render("leaderboard", { stats });
+  })
+);
 
 // Error handler
 app.use((err, req, res, _next) => {

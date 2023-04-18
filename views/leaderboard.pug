@@ -1,0 +1,26 @@
+extends layout
+
+block tableContent
+  section.greeting
+    h1 Welcome to
+    h1#twenty-one-text TWENTY-ONE!
+
+  section.leaderboard
+    h2 Leaderboard
+    div#table-container
+      table
+        thead
+          tr
+            th Name
+            th Purse
+            th Wins
+            th Losses
+        tbody
+          each stat in stats
+            tr
+              td #{stat.username}
+              td $ #{stat.purse}.00
+              td #{stat.wins}
+              td #{stat.losses}
+
+    a.center-actions(href="/game/start") Return

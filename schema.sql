@@ -1,4 +1,4 @@
-CREATE TABLE users (
+CREATE TABLE twenty_one_users (
   id serial PRIMARY KEY,
   username text NOT NULL UNIQUE,
   password text NOT NULL,

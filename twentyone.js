@@ -1,3 +1,4 @@
+const config = require("./lib/config");
 const express = require("express");
 const morgan = require("morgan");
 const flash = require("express-flash");
@@ -8,8 +9,8 @@ const PgPersistence = require("./lib/pg-persistence");
 const catchError = require("./lib/catch-error");
 
 const app = express();
-const host = "192.168.86.131";
-const port = 3001;
+const host = config.HOST;
+const port = config.PORT;
 const LokiStore = store(session);
 
 app.set("views", "./views");
@@ -28,7 +29,7 @@ app.use(session({
   name: "twenty-one-game-session-id",
   resave: false,
   saveUninitialized: true,
-  secret: "insecure-please-change-me-later",
+  secret: config.SECRET,
   store: new LokiStore({}),
 }));
 app.use(flash());

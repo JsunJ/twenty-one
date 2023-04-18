@@ -23,7 +23,9 @@ block tableContent
 
   section.actions
     if handValues.dealer >= 17
-      a.center-actions(href="/game/over") CONTINUE
+      form(action="/game/dealer/stand" method="post")
+        fieldset.center-actions
+          button CONTINUE
     if handValues.dealer < 17
       form(action="/game/dealer/hit" method="post")
         fieldset.center-actions

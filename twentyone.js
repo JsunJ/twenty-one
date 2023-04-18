@@ -81,9 +81,7 @@ app.get("/game/bet", (req, res) => {
   // requiresInProgress
   // if bet already placed, flash a message and
   // CONTINUE to the current turn
-  res.render("bet", {
-    // pass in player's current purse (read from pg store)
-  });
+  res.render("bet");
 });
 
 // Handle bet submission
@@ -243,7 +241,7 @@ app.get("/game/over", (req, res) => {
       dealer: res.locals.sessionStore.getHandValue(gameData.dealer),
       player: res.locals.sessionStore.getHandValue(gameData.player),
     },
-    hasBlackJack: res.locals.sessionStore.hasBlackJack(),
+    hasBlackJack: gameData.player.hasBlackJack,
   });
 });
 

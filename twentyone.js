@@ -3,7 +3,8 @@ const express = require("express");
 const morgan = require("morgan");
 const flash = require("express-flash");
 const session = require("express-session");
-const store = require("connect-loki");
+// const store = require("connect-loki");
+const MongoStore = require('connect-mongo');
 const SessionPersistence = require("./lib/session-persistence");
 const PgPersistence = require("./lib/pg-persistence");
 const catchError = require("./lib/catch-error");
@@ -11,7 +12,7 @@ const catchError = require("./lib/catch-error");
 const app = express();
 const host = config.HOST;
 const port = config.PORT;
-const LokiStore = store(session);
+// const LokiStore = store(session);
 
 app.set("views", "./views");
 app.set("view engine", "pug");
@@ -22,7 +23,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(session({
   cookie: {
     httpOnly: true,
-    maxAge: 31 * 24 * 60 * 60 * 1000, // 31 days in millseconds
+    maxAge: 60 * 60 * 24, // 24 hours
     path: "/",
     secure: false,
   },
@@ -30,7 +31,11 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
   secret: config.SECRET,
-  store: new LokiStore({}),
+  store: MongoStore.create({
+    mongoUrl: config.MONGO_URL,
+    ttl: 60 * 60 * 24, // 24 hours
+  }),
+  // store: new LokiStore({}),
 }));
 app.use(flash());
 
